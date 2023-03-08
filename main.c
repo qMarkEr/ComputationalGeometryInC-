@@ -4,21 +4,19 @@
 #include "list.h"
 
 int main() {
-//    pnt* a = malloc(sizeof(pnt*));
-//    a->x = 1;
-//    a->y = 2;
     int a[4];
-    for (int i = 0; i < 4; ++i) {
+    for (int i = 0; i < 2; ++i) {
         scanf("%d", &a[i]);
     }
     list* lst = list_init(&a[0]);
-    for (int i = 1; i < 4; ++i) {
+    for (int i = 1; i < 2; ++i) {
         add(lst, &a[i]);
         printf("\n");
     }
- //   free(a);
+    a[3] = 1010;
+    insert(lst, &a[3], 1);
     lst_print(lst, *int_print);
-    printf("%d", lst->length);
+
     destroy(lst);
     return 0;
 }

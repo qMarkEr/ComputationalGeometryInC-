@@ -16,8 +16,10 @@ typedef struct lst {
 node* init (void* data);
 void add(list *lst, void* data);
 void lst_print(list *lst, void (*prnt) (void*));
-void insert(list *lst, void* data, int pos);
+void insert(list *lst, void* data, int index);
+void* at_index(list *lst, int index);
 void destroy(list *lst);
+void delete(list *lst, int index);
 
 list* list_init(void *data);
 #endif
