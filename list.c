@@ -73,7 +73,7 @@ node* at_index(list *lst, int index) {
         cur = lst->tail;
         i = lst->length - 1;
         while (i != index) {
-            cur = cur->next;
+            cur = cur->prev;
             i--;
         }
     } else {

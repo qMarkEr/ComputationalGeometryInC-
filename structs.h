@@ -16,6 +16,7 @@ typedef struct segment {
 void sgt_output(void* this);
 int sgt_input(sgt* this);
 void int_print(void* this);
-void int_double(void* this);
+void double_print(void* this);
 int pnt_cmp(void *x, void *y);
+int int_cmp(void* x, void* y);
 #endif
