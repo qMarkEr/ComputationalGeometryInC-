@@ -3,7 +3,7 @@
 #include "stdlib.h"
 
 node* init (void* data) {
-    node* new = malloc(sizeof(node*));
+    node* new = (node*)malloc(sizeof(node));
     new->content = data;
     new->next = NULL;
     new->prev = NULL;
@@ -11,14 +11,17 @@ node* init (void* data) {
 }
 
 void add(list *lst, void* data) {
+    node* new = (node*) malloc(sizeof(node));
+    new->content = data;
+    new->next = NULL;
+    new->prev = NULL;
     if (lst->head == NULL) {
-        lst->head = init(data);
+        lst->head = new;
         lst->tail = lst->head;
     } else {
-        node* temp_tail = lst->tail;
-        temp_tail->next = init(data);
-        lst->tail = temp_tail->next;
-        lst->tail->prev = temp_tail;
+        new->prev = lst->tail;
+        lst->tail->next = new;
+        lst->tail = new;
     }
     lst->length++;
 }
@@ -32,130 +35,139 @@ void lst_print(list *lst, void (*prnt) (void*)) {
     }
 }
 
-void destroy(list *lst) {
-    while(lst->tail->prev != lst->head && lst->head != lst->tail) {
-        delete(lst, 0);
-        delete(lst, lst->length - 1);
-    }
-    if (lst->head == lst->tail) {
-        free(lst->tail);
-    } else {
-        free(lst->tail);
-        free(lst->head);
-    }
-    free(lst);
-}
-
 list* list_init(void *data) {
-    list *lst = malloc(sizeof(list));
+    list *lst = (list*)malloc(sizeof(list));
     lst->head = init(data);
     lst->tail = lst->head;
     lst->length = 1;
     return lst;
 }
 
-void delete(list *lst, int index) {
-    if (index < 0 || index >= lst->length) {
-        return;
+void destroy(list *lst) {
+    if (lst) {
+        int flag = 1;
+        while (flag) {
+
+            if (lst->head != lst->tail) delete(lst, lst->length - 1);
+            else flag = 0;
+
+            if (lst->head != lst->tail) delete(lst, 0);
+            else flag = 0;
+
+        }
+        free(lst->head);
+        free(lst);
     }
-    if (index == 0) {
-        node* temp_head = lst->head;
-        lst->head = temp_head->next;
-        lst->head->prev = NULL;
-        free(temp_head);
+}
 
-    } else if (index == lst->length - 1) {
-        node* temp_tail = lst->tail;
-        lst->tail = temp_tail->prev;
-        lst->tail->next = NULL;
-        free(temp_tail);
-
-    } else if (index <= lst->length / 2) {
-        int i = 0;
-        node* cur = lst->head;
+node* at_index(list *lst, int index) {
+    if (index < 0 || index >= lst->length)
+        return NULL;
+    if (index == 0)
+        return lst->head;
+    if (index == lst->length - 1)
+        return lst->tail;
+    node* cur;
+    int i;
+    if (index > lst->length / 2) {
+        cur = lst->tail;
+        i = lst->length - 1;
+        while (i != index) {
+            cur = cur->next;
+            i--;
+        }
+    } else {
+        cur = lst->head;
+        i = 0;
         while (i != index) {
             cur = cur->next;
             i++;
         }
-        cur->prev->next = cur->next;
-        cur->next->prev = cur->prev;
-        free(cur);
+    }
+    return cur;
+}
 
-    } else {
-        int i = lst->length - 1;
-        node* cur = lst->tail;
-        while (i > index) {
-            cur = cur->prev;
+void delete(list *lst, int index) {
+    if (!lst)
+        return;
+
+    if (index < 0 || index >= lst->length)
+        return;
+
+    if (index == 0) {
+        node *temp_head = lst->head;
+        lst->head = temp_head->next;
+        free(temp_head);
+        return;
+    }
+    if (index == lst->length - 1) {
+        node *temp_tail = lst->tail;
+        lst->tail = temp_tail->prev;
+        free(temp_tail);
+        return;
+    }
+    node* cur;
+    int i;
+    if (index > lst->length / 2) {
+        cur = lst->tail;
+        i = lst->length - 1;
+        while (i != index) {
+            cur = cur->next;
             i--;
         }
-        cur->prev->next = cur->next;
-        cur->next->prev = cur->prev;
-        free(cur);
+    } else {
+        cur = lst->head;
+        i = 0;
+        while (i != index) {
+            cur = cur->next;
+            i++;
+        }
     }
+    cur->next->prev = cur->prev;
+    cur->prev->next = cur->next;
+    free(cur);
     lst->length--;
 }
 
-void* at_index(list *lst, int index) {
-    if (index < 0 || index >= lst->length) {
-        return NULL;
-    }
-    if (index < lst->length / 2) {
-        node* cur = lst->head;
-        int i = 0;
-        while (i != index) {
-            cur = cur->next;
-            i++;
-        }
-        return cur->content;
-    } else {
-        node* cur = lst->tail;
-        int i = lst->length - 1;
-        while (i != index) {
-            cur = cur->prev;
-            i--;
-        }
-        return cur->content;
-    }
-}
+void insert(list *lst, void *data, int index) {
+    if (!lst)
+        return;
 
-void insert(list *lst, void* data, int index) {
-    if (index > lst->head) {
+    if (index < 0 || index >= lst->length)
+        return;
+
+    if (index == 0) {
+        node* new = init(data);
+        new->next = lst->head;
+        lst->head->prev = new;
+        lst->head = new;
         return;
     }
     if (index == lst->length - 1) {
         add(lst, data);
         return;
     }
-    if (index == 0) {
-        node* temp = lst->head;
-        lst->head = init(data);
-        lst->head->next = temp;
-        return;
-    }
-    if (index < lst->length / 2) {
-        node* cur = lst->head;
-        int i = 0;
-        while (i != index - 1) {
+    node* cur;
+    int i;
+    if (index > lst->length / 2) {
+        cur = lst->tail;
+        i = lst->length - 1;
+        while (i != index) {
+            cur = cur->next;
+            i--;
+        }
+    } else {
+        cur = lst->head;
+        i = 0;
+        while (i != index) {
             cur = cur->next;
             i++;
         }
-        node* new = init(data);
-        new->prev = cur;
-        new->next = cur->next;
-        cur->next = new;
-        new->next->prev = new;
-    } else {
-        node* cur = lst->tail;
-        int i = lst->length - 1;
-        while (i != index) {
-            cur = cur->prev;
-            i--;
-        }
-        node* new = init(data);
-        new->prev = cur;
-        new->next = cur->next;
-        cur->next = new;
-        new->next->prev = new;
     }
+    node* new = init(data);
+    new->next = cur;
+    new->prev = cur->prev;
+    cur->prev->next = new;
+    cur->prev = new;
     lst->length++;
 }

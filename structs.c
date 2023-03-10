@@ -29,3 +29,16 @@ void int_print(void* this) {
 void int_double(void* this) {
     printf("%lf", *(double*) this);
 }
+
+int pnt_cmp(void *x, void *y) {
+    pnt* a = x;
+    pnt* b = y;
+    double angle_a = a->y / (a->x * a->x + a->y * a->y);
+    double angle_b = b->y / (b->x * b->x + b->y * b->y);
+    if (angle_a > angle_b) {
+        return 1;
+    } else if (angle_a < angle_b) {
+        return -1;
+    }
+    return 0;
+}
