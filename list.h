@@ -2,25 +2,25 @@
 #define TITLED_LIST_H
 #include "stdlib.h"
 
-typedef struct node {
-    struct node* prev;
-    struct node* next;
+typedef struct Node {
+    struct Node* prev;
+    struct Node* next;
     void* content;
 } node;
 
-typedef struct lst {
+typedef struct List {
     node* head;
     node* tail;
     int length;
 } list;
 
 node* init (void* data);
-list* list_init(void *data);
+list* list_init();
 void add(list *lst, void* data);
-void lst_print(list *lst, void (*prnt) (void*));
+void list_print(list *lst, void (*prnt) (void*));
 void insert(list *lst, void* data, int index);
-node* at_index(list *lst, int index);
-void destroy(list *lst);
+node* find(list *lst, int index);
 void delete(list *lst, int index);
+void destroy(list *lst);
 
 #endif

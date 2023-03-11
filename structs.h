@@ -17,6 +17,7 @@ void sgt_output(void* this);
 int sgt_input(sgt* this);
 void int_print(void* this);
 void double_print(void* this);
-int pnt_cmp(void *x, void *y);
+int pnt_cmp(void* o, void* x, void* y);
+double dist(pnt* a, pnt* b);
 int int_cmp(void* x, void* y);
 #endif
